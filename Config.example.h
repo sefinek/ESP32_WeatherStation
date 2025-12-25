@@ -18,7 +18,7 @@
 constexpr const char* WIFI_SSID = "YOUR_WIFI_SSID";
 constexpr const char* WIFI_PASSWORD = "YOUR_WIFI_PASSWORD";
 constexpr uint8_t WIFI_MAX_CONNECT_ATTEMPTS = 30;
-constexpr uint16_t WIFI_CONNECT_DELAY_MS = 500;
+constexpr uint16_t WIFI_CONNECT_DELAY_MS = 7000;
 
 // ============================================================================
 // I2C Bus #1 - BME280/BMP280 Configuration

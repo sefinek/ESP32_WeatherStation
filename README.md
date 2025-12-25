@@ -9,7 +9,7 @@ Advanced weather monitoring system for ESP-WROOM-32 Ideaspark with real-time web
 - RESTful JSON API
 - Advanced meteorological calculations (dew point, feels like, comfort level)
 - Dynamic color-coded values based on sensor readings
-- WiFi signal strength monitoring
+- Wi-Fi signal strength monitoring
 - System uptime tracking
 - Moon phase calculation
 - Pressure trend analysis with 3-hour history

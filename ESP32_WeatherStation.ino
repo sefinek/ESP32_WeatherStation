@@ -60,14 +60,12 @@ void setup() {
   WiFi.mode(WIFI_STA);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 
-  // Wait for WiFi connection with timeout
-  uint8_t attempts = 0;
-  while (WiFi.status() != WL_CONNECTED && attempts < WIFI_MAX_CONNECT_ATTEMPTS) {
+  // Wait for WiFi connection (infinite retry)
+  while (WiFi.status() != WL_CONNECTED) {
     delay(WIFI_CONNECT_DELAY_MS);
     #if DEBUG_SERIAL_ENABLED
     Serial.print(".");
     #endif
-    attempts++;
   }
 
   #if DEBUG_SERIAL_ENABLED

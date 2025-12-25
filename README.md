@@ -1,6 +1,6 @@
-# ESP32 Outdoor Weather Station
+# ESP-WROOM-32 Outdoor Weather Station
 
-Advanced weather monitoring system for ESP32 with real-time web dashboard and API.
+Advanced weather monitoring system for ESP-WROOM-32 Ideaspark with real-time web dashboard and API.
 
 > **Note:** This README was generated with AI assistance.
 

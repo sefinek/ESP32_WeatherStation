@@ -20,6 +20,12 @@ constexpr const char* WIFI_PASSWORD = "YOUR_WIFI_PASSWORD";
 constexpr uint16_t WIFI_CONNECT_DELAY_MS = 7000;
 
 // ============================================================================
+// Sensor Enable/Disable Configuration
+// ============================================================================
+#define SENSOR_BME280_ENABLED true   // BME280/BMP280 temperature, humidity, pressure sensor
+#define SENSOR_BH1750_ENABLED false  // BH1750 light sensor
+
+// ============================================================================
 // I2C Bus #1 - BME280/BMP280 Configuration
 // ============================================================================
 constexpr uint8_t I2C1_SDA_PIN = 19;

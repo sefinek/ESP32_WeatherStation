@@ -89,10 +89,9 @@ void setup() {
     // WiFi connection failed - set error indicator
     errorIndicator.setError(ErrorType::WIFI_ERROR);
 
-    #if DEBUG_SERIAL_ENABLED
-    Serial.println("WARNING: WiFi connection failed!");
+    // Always show WiFi errors
+    Serial.println("WARNING: Wi-Fi connection failed!");
     Serial.println("System will continue without network connectivity.");
-    #endif
   }
 
   // -------------------------------------------------------------------------
@@ -106,11 +105,9 @@ void setup() {
     // Sensor initialization failed - set critical error and prepare for restart
     errorIndicator.setError(ErrorType::CRITICAL_ERROR);
 
-    #if DEBUG_SERIAL_ENABLED
+    // Always show critical errors
     Serial.println("CRITICAL ERROR: I2C sensor initialization failed!");
-    Serial.println("Check connections: BME280 (SDA=19, SCL=21), BH1750 (SDA=27, SCL=26)");
     Serial.println("ESP32 will automatically restart in 60 seconds...");
-    #endif
 
     // Blink LED very fast for 60 seconds, then auto-restart
     const uint32_t startTime = millis();
@@ -119,23 +116,20 @@ void setup() {
     while (millis() - startTime < restartDelay) {
       errorIndicator.update();
 
-      #if DEBUG_SERIAL_ENABLED
-      // Print countdown every 10 seconds
+      // Always print countdown for critical errors
       static uint32_t lastPrint = 0;
       if (millis() - lastPrint >= 10000) {
         lastPrint = millis();
         uint32_t remaining = (restartDelay - (millis() - startTime)) / 1000;
         Serial.printf("Auto-restart in %lu seconds...\n", remaining);
       }
-      #endif
 
       delay(10);
     }
 
-    #if DEBUG_SERIAL_ENABLED
+    // Always show restart message for critical errors
     Serial.println("Restarting ESP32 now...");
     Serial.flush();
-    #endif
 
     // Perform system restart
     ESP.restart();

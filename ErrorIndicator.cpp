@@ -23,25 +23,6 @@ void ErrorIndicator::setError(ErrorType error) {
     m_currentError = error;
     m_lastToggleTime = millis();
     setLED(false);
-
-    #if DEBUG_SERIAL_ENABLED
-    // Only log errors, not normal status
-    if (error != ErrorType::NONE) {
-      switch (error) {
-        case ErrorType::WIFI_ERROR:
-          Serial.println("ERROR: WiFi failed");
-          break;
-        case ErrorType::SENSOR_ERROR:
-          Serial.println("ERROR: Sensor malfunction");
-          break;
-        case ErrorType::CRITICAL_ERROR:
-          Serial.println("CRITICAL: I2C sensor init failed");
-          break;
-        default:
-          break;
-      }
-    }
-    #endif
   }
 }
 

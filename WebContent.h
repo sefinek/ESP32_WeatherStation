@@ -1,8 +1,3 @@
-/*
- * Web Content for ESP32 Weather Station
- * HTML dashboard stored in PROGMEM (Flash) to save RAM
- */
-
 #ifndef WEB_CONTENT_H
 #define WEB_CONTENT_H
 
@@ -409,6 +404,7 @@ const char HTML_DASHBOARD[] PROGMEM = R"rawliteral(<!DOCTYPE html>
     };
 
     const calculateDewPoint = (temp, humidity) => {
+      if (temp === undefined || temp === null || isNaN(temp)) return 'N/A';
       if (!humidity || isNaN(humidity)) return 'N/A';
       const a = 17.27;
       const b = 237.7;
@@ -418,6 +414,7 @@ const char HTML_DASHBOARD[] PROGMEM = R"rawliteral(<!DOCTYPE html>
     };
 
     const calculateFeelsLike = (temp, humidity) => {
+      if (temp === undefined || temp === null || isNaN(temp)) return 'N/A';
       if (!humidity || isNaN(humidity)) return `${temp.toFixed(1)}°C`;
       if (temp >= 27) {
         const hi = -8.78469475556 + 1.61139411 * temp + 2.33854883889 * humidity +
@@ -434,12 +431,14 @@ const char HTML_DASHBOARD[] PROGMEM = R"rawliteral(<!DOCTYPE html>
     };
 
     const calculateAbsoluteHumidity = (temp, humidity) => {
+      if (temp === undefined || temp === null || isNaN(temp)) return 'N/A';
       if (!humidity || isNaN(humidity)) return 'N/A';
       const absHumidity = (6.112 * Math.exp((17.67 * temp) / (temp + 243.5)) * humidity * 2.1674) / (273.15 + temp);
       return `${absHumidity.toFixed(1)} g/m³`;
     };
 
     const getComfortLevel = (temp, humidity) => {
+      if (temp === undefined || temp === null || isNaN(temp)) return 'N/A';
       if (!humidity || isNaN(humidity)) {
         if (temp < 15) return '🥶 Cold';
         if (temp > 25) return '🥵 Hot';
@@ -453,15 +452,15 @@ const char HTML_DASHBOARD[] PROGMEM = R"rawliteral(<!DOCTYPE html>
       return '😐 Moderate';
     };
 
-    const getAirQuality = (humidity) => {
+    const getAirQuality = humidity => {
       if (!humidity || isNaN(humidity)) return 'N/A';
-      if (humidity >= 40 && humidity <= 60) return '✓ Optimal';
-      if (humidity < 30) return '⚠ Too Dry';
-      if (humidity > 70) return '⚠ Too Humid';
+      if (humidity >= 40 && humidity <= 60) return '✅ Optimal';
+      if (humidity < 30) return '⚠️ Too Dry';
+      if (humidity > 70) return '⚠️ Too Humid';
       return '~ Fair';
     };
 
-    const getPressureTrend = (currentPressure) => {
+    const getPressureTrend = currentPressure => {
       const history = JSON.parse(localStorage.getItem('pressureHistory') || '[]');
       history.push({ p: currentPressure, t: Date.now() });
       const cutoff = Date.now() - 3 * 60 * 60 * 1000;
@@ -554,7 +553,6 @@ const char HTML_DASHBOARD[] PROGMEM = R"rawliteral(<!DOCTYPE html>
           const temp = data.temperature;
           const hum = data.humidity;
           const press = data.pressure;
-          const pressHpa = press / 100;
           const rssi = data.rssi;
 
           const tempEl = document.getElementById('temp');
@@ -562,17 +560,34 @@ const char HTML_DASHBOARD[] PROGMEM = R"rawliteral(<!DOCTYPE html>
           const pressEl = document.getElementById('press');
           const lightEl = document.getElementById('light');
 
-          tempEl.textContent = temp.toFixed(2);
-          applyColor(tempEl, getTempColor(temp));
+          if (temp !== undefined && temp !== null) {
+            tempEl.textContent = temp.toFixed(2);
+            applyColor(tempEl, getTempColor(temp));
+          } else {
+            tempEl.textContent = 'N/A';
+          }
 
-          humEl.textContent = hum !== null ? hum.toFixed(2) : 'N/A';
-          if (hum !== null) applyColor(humEl, getHumidityColor(hum));
+          if (hum !== undefined && hum !== null) {
+            humEl.textContent = hum.toFixed(2);
+            applyColor(humEl, getHumidityColor(hum));
+          } else {
+            humEl.textContent = 'N/A';
+          }
 
-          pressEl.textContent = pressHpa.toFixed(2);
-          applyColor(pressEl, getPressureColor(pressHpa));
+          if (press !== undefined && press !== null) {
+            const pressHpa = press / 100;
+            pressEl.textContent = pressHpa.toFixed(2);
+            applyColor(pressEl, getPressureColor(pressHpa));
+          } else {
+            pressEl.textContent = 'N/A';
+          }
 
-          lightEl.textContent = data.light.toFixed(2);
-          applyColor(lightEl, getLightColor(data.light));
+          if (data.light !== undefined && data.light !== null) {
+            lightEl.textContent = data.light.toFixed(2);
+            applyColor(lightEl, getLightColor(data.light));
+          } else {
+            lightEl.textContent = 'N/A';
+          }
 
           const uptimeEl = document.getElementById('uptime');
           uptimeEl.textContent = formatUptime(data.uptime);
@@ -587,7 +602,7 @@ const char HTML_DASHBOARD[] PROGMEM = R"rawliteral(<!DOCTYPE html>
 
           document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
 
-          const pressureTrend = getPressureTrend(press);
+          const pressureTrend = (press !== undefined && press !== null) ? getPressureTrend(press) : '− N/A';
           document.getElementById('dewPoint').textContent = calculateDewPoint(temp, hum);
           document.getElementById('feelsLike').textContent = calculateFeelsLike(temp, hum);
           document.getElementById('absHumidity').textContent = calculateAbsoluteHumidity(temp, hum);
@@ -599,11 +614,11 @@ const char HTML_DASHBOARD[] PROGMEM = R"rawliteral(<!DOCTYPE html>
 
           countdown = 5;
 
-          statusEl.textContent = '✓ System Online';
+          statusEl.textContent = '✅ System Online';
           statusEl.className = 'status';
         })
         .catch(() => {
-          statusEl.textContent = '✗ Connection Error';
+          statusEl.textContent = '❌ Connection Error';
           statusEl.className = 'status error';
           latencyEl.textContent = '-- ms';
           latencyEl.className = 'info-value';
@@ -625,4 +640,4 @@ const char HTML_DASHBOARD[] PROGMEM = R"rawliteral(<!DOCTYPE html>
 </html>
 )rawliteral";
 
-#endif // WEB_CONTENT_H
+#endif

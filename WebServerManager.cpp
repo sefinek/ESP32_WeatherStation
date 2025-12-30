@@ -24,7 +24,6 @@ void WebServerManager::begin() {
 
 // Handle root path - serve HTML dashboard
 void WebServerManager::handleRoot() {
-  // Send HTML from PROGMEM (Flash memory)
   m_server.send_P(200, "text/html", HTML_DASHBOARD);
 }
 
@@ -53,26 +52,48 @@ void WebServerManager::buildJSONResponse(char* buffer, size_t bufferSize) const 
   // Get WiFi signal strength (RSSI) - only if connected
   const int8_t rssi = (WiFi.status() == WL_CONNECTED) ? WiFi.RSSI() : -100;
 
-  // Build JSON using snprintf for better performance and no heap fragmentation
+  // Build JSON dynamically based on enabled sensors
+  size_t offset = 0;
+
+  // Start JSON object
+  offset += snprintf(buffer + offset, bufferSize - offset, "{");
+
+  #if SENSOR_BME280_ENABLED
+  // Add BME280 sensor data (temperature, humidity, pressure)
   if (isfinite(data.humidity)) {
-    snprintf(buffer, bufferSize,
-             "{\"temperature\":%.2f,\"humidity\":%.2f,\"pressure\":%.2f,\"light\":%.2f,\"uptime\":%lu,\"rssi\":%d,\"valid\":%s}",
-             data.temperature,
-             data.humidity,
-             data.pressure,
-             data.lightLevel,
-             uptimeSeconds,
-             rssi,
-             data.isValid ? "true" : "false");
+    offset += snprintf(buffer + offset, bufferSize - offset,
+                      "\"temperature\":%.2f,\"humidity\":%.2f,\"pressure\":%.2f",
+                      data.temperature, data.humidity, data.pressure);
   } else {
-    // Handle case where humidity is not available (BMP280)
-    snprintf(buffer, bufferSize,
-             "{\"temperature\":%.2f,\"humidity\":null,\"pressure\":%.2f,\"light\":%.2f,\"uptime\":%lu,\"rssi\":%d,\"valid\":%s}",
-             data.temperature,
-             data.pressure,
-             data.lightLevel,
-             uptimeSeconds,
-             rssi,
-             data.isValid ? "true" : "false");
+    // BMP280 variant - no humidity sensor
+    offset += snprintf(buffer + offset, bufferSize - offset,
+                      "\"temperature\":%.2f,\"humidity\":null,\"pressure\":%.2f",
+                      data.temperature, data.pressure);
   }
+  #endif
+
+  #if SENSOR_BH1750_ENABLED
+  // Add comma separator if BME280 data was added
+  #if SENSOR_BME280_ENABLED
+  offset += snprintf(buffer + offset, bufferSize - offset, ",");
+  #endif
+
+  // Add BH1750 light sensor data
+  if (isfinite(data.lightLevel)) {
+    offset += snprintf(buffer + offset, bufferSize - offset,
+                      "\"light\":%.2f", data.lightLevel);
+  } else {
+    offset += snprintf(buffer + offset, bufferSize - offset,
+                      "\"light\":null");
+  }
+  #endif
+
+  // Add system info (always present)
+  #if SENSOR_BME280_ENABLED || SENSOR_BH1750_ENABLED
+  offset += snprintf(buffer + offset, bufferSize - offset, ",");
+  #endif
+
+  offset += snprintf(buffer + offset, bufferSize - offset,
+                    "\"uptime\":%lu,\"rssi\":%d,\"valid\":%s}",
+                    uptimeSeconds, rssi, data.isValid ? "true" : "false");
 }

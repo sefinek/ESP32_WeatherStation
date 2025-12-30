@@ -2,12 +2,12 @@
  * ESP32 Weather Station - Main File
  *
  * Modular architecture with separate managers for sensors and web server
- * Optimized for performance with PROGMEM HTML and efficient JSON generation
+ * HTML dashboard stored in PROGMEM for optimal performance
  * Built-in LED (GPIO2) indicates system status and errors
  *
  * Hardware:
  * - ESP32 Development Board
- * - BME280/BMP280: Temperature, Humidity, Pressure (I2C Bus 1: SDA=19, SCL=21)
+ * - BME280/BMP280: Temperature, Humidity, Pressure (I2C Bus 1: SDA=5, SCL=18)
  * - BH1750: Light intensity sensor (I2C Bus 2: SDA=27, SCL=26)
  * - Built-in LED (GPIO2): Error/Status indicator
  */

@@ -178,4 +178,4 @@ ESP32 (sensors) → JSON API → sefinek-cron (MongoDB) → sefinek.net (visuali
 - `SensorManager.cpp` - Conditional sensor reading (lines 102-145)
 
 ## License
-Copyright (c) 2025 Sefinek. Licensed under MIT.
+Copyright (c) 2025-2026 Sefinek. Licensed under MIT.

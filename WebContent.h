@@ -384,7 +384,7 @@ const char HTML_DASHBOARD[] PROGMEM = R"rawliteral(<!DOCTYPE html>
 
     <div class="footer">
       Auto-refresh every 5 seconds.<br>
-      Copyright (c) 2025 Sefinek. Licensed under MIT.
+      Copyright (c) 2025-2026 Sefinek. Licensed under MIT.
     </div>
   </div>
   <script>
